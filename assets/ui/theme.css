@@ -1,0 +1,28 @@
+.hud {
+  gap: 12;
+  padding: 24;
+  background: #1a1a2ecc;
+  border-radius: 8;
+}
+
+.title {
+  color: #eaeaea;
+  font-size: 32;
+}
+
+.score {
+  color: #4ecdc4;
+  font-size: 22;
+}
+
+.btn {
+  background: #16213e;
+  color: #ffffff;
+  font-size: 18;
+  padding: 12;
+  border-radius: 6;
+}
+
+Button:hover {
+  background: #0f3460;
+}

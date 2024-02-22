@@ -1,0 +1,18 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "vs",
+      "displayName": "Visual Studio",
+      "generator": "Visual Studio 18 2026",
+      "binaryDir": "${sourceDir}/build"
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "game",
+      "configurePreset": "vs",
+      "targets": ["tic-tac-toe"]
+    }
+  ]
+}
