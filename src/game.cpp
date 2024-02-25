@@ -6,13 +6,10 @@
 #include <engine/ecs/physics.h>
 #include <engine/ecs/transform.h>
 #include <engine/render/renderable.h>
-#include <engine/resources/meta.h>
 #include <engine/ui/canvas.h>
-#include <engine/ui/document.h>
-#include <engine/ui/stylesheet.h>
+#include <engine/ui/command.h>
 
 #include <asset_ids.h>
-#include <catalog_text.h>
 
 #include <cmath>
 #include <utility>
@@ -60,31 +57,22 @@ engine::render::MeshDesc unit_quad() {
 
 }
 
-Game::Game(engine::AssetsDb& assets, engine::render::IGraphicFactory& factory)
-    : assets_(assets), factory_(factory), hud_(std::make_shared<HudViewModel>()) {}
+Game::Game(engine::InputSystem&, engine::IAudioSystem& audio, engine::render::IGraphicFactory& factory) :
+    audio_(audio), factory_(factory), hud_(std::make_shared<HudViewModel>()) {}
 
-std::string Game::WindowTitle() const {
+std::string Game::window_title() const {
     return "Tic Tac Toe";
 }
 
-glm::ivec2 Game::WindowSize() const {
+glm::ivec2 Game::window_size() const {
     return {960, 540};
 }
 
-void Game::OnStart() {
-    load_catalog();
+void Game::on_start() {
     spawn_camera();
     spawn_quad();
     spawn_hud();
     register_systems();
-}
-
-void Game::load_catalog() {
-    auto catalog = engine::parse_cooked_catalog(kCookedCatalogToml);
-    if (!catalog) {
-        return;
-    }
-    assets_.set_catalog(std::move(*catalog));
 }
 
 void Game::spawn_camera() {
@@ -118,20 +106,13 @@ void Game::spawn_quad() {
 }
 
 void Game::spawn_hud() {
-    auto document = assets_.Get<engine::ui::UiDocument>(assets::ui::hud);
-    auto stylesheet = assets_.Get<engine::ui::Stylesheet>(assets::ui::theme);
-
     const engine::ecs::Entity canvas = world_.create();
-    engine::ui::UiCanvas ui;
-    ui.document = assets::ui::hud;
-    ui.stylesheet = assets::ui::theme;
-    ui.data_context = hud_;
-    ui.fit = engine::ui::UiFit::FillWindow;
-    ui.order = 10;
-    world_.emplace<engine::ui::UiCanvas>(canvas, ui);
-    world_.emplace<engine::ui::UiInstance>(canvas, engine::ui::UiInstance{
-            .document = std::move(*document),
-            .stylesheet = std::move(*stylesheet),
+    world_.emplace<engine::ui::UiCanvas>(canvas, engine::ui::UiCanvas{
+            .document = assets::ui::hud,
+            .stylesheet = assets::ui::theme,
+            .data_context = hud_,
+            .fit = engine::ui::UiFit::FillWindow,
+            .order = 10,
     });
 
     hud_->nudge = [this] {
@@ -145,11 +126,11 @@ void Game::spawn_hud() {
         body->velocity.x += (body->velocity.x >= 0.f) ? 1.5f : -1.5f;
         body->velocity.y += (body->velocity.y >= 0.f) ? 1.2f : -1.2f;
     };
-    hud_->quit = [this] { world_.ctx<engine::ApplicationState>().Quit(); };
+    hud_->quit = [this] { world_.ctx<engine::ApplicationState>().quit(); };
 }
 
 void Game::register_systems() {
-    world_.AddSystem(engine::ecs::Schedule::Fixed, engine::ecs::Phase::Game, [this](engine::ecs::World& world) {
+    world_.add_system(engine::ecs::Schedule::Fixed, engine::ecs::Phase::Game, [this](engine::ecs::World& world) {
         if (!world.valid(quad_)) {
             return;
         }
@@ -193,7 +174,7 @@ void Game::register_systems() {
         }
 
         if (bounced && hud_) {
-            hud_->bounces.Set(hud_->bounces.Get() + 1);
+            hud_->bounces.set(hud_->bounces.get() + 1);
         }
     });
 }

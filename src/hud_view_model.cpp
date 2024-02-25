@@ -3,9 +3,9 @@
 namespace game {
 
 HudViewModel::HudViewModel() {
-    Property("bounces", bounces);
-    Command("nudge", nudge);
-    Command("quit", quit);
+    property("bounces", bounces);
+    command("nudge", nudge);
+    command("quit", quit);
 }
 
 }

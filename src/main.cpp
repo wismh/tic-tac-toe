@@ -4,8 +4,8 @@
 
 int main() {
     engine::Engine<game::Game> app;
-    if (!app.Init()) {
+    if (!app.init()) {
         return 1;
     }
-    return app.Run();
+    return app.run();
 }

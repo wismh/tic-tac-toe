@@ -1,8 +1,9 @@
 #pragma once
 
+#include <engine/audio/audio_system.h>
+#include <engine/core/input_system.h>
 #include <engine/igame.h>
 #include <engine/render/graphic_factory.h>
-#include <engine/resources/assets_db.h>
 
 #include <game/hud_view_model.h>
 
@@ -12,21 +13,20 @@ namespace game {
 
 class Game final : public engine::GameBase {
 public:
-    Game(engine::AssetsDb& assets, engine::render::IGraphicFactory& factory);
+    Game(engine::InputSystem&, engine::IAudioSystem& audio, engine::render::IGraphicFactory& factory);
 
-    std::string WindowTitle() const override;
-    glm::ivec2 WindowSize() const override;
+    std::string window_title() const override;
+    glm::ivec2 window_size() const override;
 
-    void OnStart() override;
+    void on_start() override;
 
 private:
-    void load_catalog();
     void spawn_camera();
     void spawn_quad();
     void spawn_hud();
     void register_systems();
 
-    engine::AssetsDb& assets_;
+    engine::IAudioSystem& audio_;
     engine::render::IGraphicFactory& factory_;
     std::shared_ptr<HudViewModel> hud_;
     engine::ecs::Entity quad_{};
