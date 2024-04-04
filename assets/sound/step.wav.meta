@@ -1,0 +1,6 @@
+guid = "c1a1c2d3e4f5678901234567890abc09"
+importer = "audio"
+bank = "sfx"
+volume = 1.0
+pitch_range = [1.0, 1.0]
+loop = false

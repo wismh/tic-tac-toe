@@ -1,0 +1,6 @@
+guid = "c1a1c2d3e4f5678901234567890abc08"
+importer = "audio"
+bank = "music"
+volume = 0.078125
+pitch_range = [1.0, 1.0]
+loop = true
