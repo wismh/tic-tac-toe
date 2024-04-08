@@ -1,28 +1,88 @@
+.menu {
+  width: 100%;
+  height: 100%;
+  gap: 20;
+  justify-content: center;
+  align-items: center;
+  background: #00000000;
+}
+
+.play {
+  width: 100%;
+  height: 100%;
+  padding: 24 0 0 0;
+  align-items: center;
+  gap: 36;
+}
+
+.board {
+  width: 440;
+  height: 416;
+  padding: 24 24 23 24;
+  background-image: c1a1c2d3e4f5678901234567890abc0a;
+}
+
+.cell-0-0 { width: 133; height: 127; justify-content: center; align-items: center; }
+.cell-1-0 { width: 128; height: 127; justify-content: center; align-items: center; }
+.cell-2-0 { width: 131; height: 127; justify-content: center; align-items: center; }
+.cell-0-1 { width: 133; height: 120; justify-content: center; align-items: center; }
+.cell-1-1 { width: 128; height: 120; justify-content: center; align-items: center; }
+.cell-2-1 { width: 131; height: 120; justify-content: center; align-items: center; }
+.cell-0-2 { width: 133; height: 122; justify-content: center; align-items: center; }
+.cell-1-2 { width: 128; height: 122; justify-content: center; align-items: center; }
+.cell-2-2 { width: 131; height: 122; justify-content: center; align-items: center; }
+
+.mark {
+  width: 100;
+  height: 100;
+}
+
 .hud {
-  gap: 12;
-  padding: 24;
-  background: #1a1a2ecc;
-  border-radius: 8;
+  gap: 20;
+  align-items: center;
+  background: #00000000;
 }
 
-.title {
-  color: #eaeaea;
+.scores {
+  gap: 24;
+  background: #00000000;
+}
+
+.score-x {
+  color: #7ecbff;
+  font-size: 36;
+  font-family: c1a1c2d3e4f5678901234567890abc07;
+  text-align: center;
+  align-items: center;
+}
+
+.score-o {
+  color: #ff7ae9;
+  font-size: 36;
+  font-family: c1a1c2d3e4f5678901234567890abc07;
+  text-align: center;
+  align-items: center;
+}
+
+.result-message {
+  color: #ffe066;
+  font-size: 28;
+  font-family: c1a1c2d3e4f5678901234567890abc07;
+  text-align: center;
+  align-items: center;
+}
+
+.menu-btn {
+  width: 326;
+  height: 88;
+  color: #e8f8ff;
   font-size: 32;
+  font-family: c1a1c2d3e4f5678901234567890abc07;
+  background-image: c1a1c2d3e4f5678901234567890abc0c;
+  text-align: center;
+  align-items: center;
 }
 
-.score {
-  color: #4ecdc4;
-  font-size: 22;
-}
-
-.btn {
-  background: #16213e;
-  color: #ffffff;
-  font-size: 18;
-  padding: 12;
-  border-radius: 6;
-}
-
-Button:hover {
-  background: #0f3460;
+.menu-btn:hover {
+  background-image: c1a1c2d3e4f5678901234567890abc0d;
 }

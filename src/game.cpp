@@ -1,181 +1,158 @@
-#include <game/color_material.h>
 #include <game/game.h>
 
+#include <engine/audio/events.h>
 #include <engine/core/application_state.h>
+#include <engine/core/time.h>
 #include <engine/ecs/camera.h>
-#include <engine/ecs/physics.h>
+#include <engine/ecs/events.h>
+#include <engine/ecs/schedule.h>
 #include <engine/ecs/transform.h>
-#include <engine/render/renderable.h>
 #include <engine/ui/canvas.h>
 #include <engine/ui/command.h>
 
 #include <asset_ids.h>
 
-#include <cmath>
-#include <utility>
+#include <game/board.h>
+
+#include <string>
 
 namespace game {
 namespace {
 
-constexpr const char* kVertexSrc = R"(
-#version 330 core
-layout(location = 0) in vec3 aPosition;
-layout(location = 1) in vec2 aUV;
-out vec2 vUV;
-uniform mat4 uModel;
-uniform mat4 uView;
-uniform mat4 uProjection;
-void main() {
-    vUV = aUV;
-    gl_Position = uProjection * uView * uModel * vec4(aPosition, 1.0);
-}
-)";
-
-constexpr const char* kFragmentSrc = R"(
-#version 330 core
-out vec4 FragColor;
-in vec2 vUV;
-uniform sampler2D uTexture;
-uniform vec4 uColor;
-void main() {
-    FragColor = texture(uTexture, vUV) * uColor;
-}
-)";
-
-engine::render::MeshDesc unit_quad() {
-    engine::render::MeshDesc desc;
-    desc.vertices = {
-            {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}},
-            {{0.5f, -0.5f, 0.0f}, {1.0f, 0.0f}},
-            {{0.5f, 0.5f, 0.0f}, {1.0f, 1.0f}},
-            {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f}},
-            {{0.5f, 0.5f, 0.0f}, {1.0f, 1.0f}},
-            {{-0.5f, 0.5f, 0.0f}, {0.0f, 1.0f}},
-    };
-    return desc;
-}
+constexpr int kScale = 3;
+constexpr int kLogicalW = 192;
+constexpr int kLogicalH = 232;
+constexpr int kWindowW = kLogicalW * kScale;
+constexpr int kWindowH = kLogicalH * kScale;
+constexpr float kOrthoHalf = 116.f;
 
 }
 
-Game::Game(engine::InputSystem&, engine::IAudioSystem& audio, engine::render::IGraphicFactory& factory) :
-    audio_(audio), factory_(factory), hud_(std::make_shared<HudViewModel>()) {}
+Game::Game(engine::InputSystem&, engine::IAudioSystem& audio) :
+    audio_(audio),
+    menu_vm_(std::make_shared<MenuViewModel>()),
+    play_vm_(std::make_shared<PlayViewModel>()),
+    presenter_(play_vm_) {}
 
 std::string Game::window_title() const {
     return "Tic Tac Toe";
 }
 
 glm::ivec2 Game::window_size() const {
-    return {960, 540};
+    return {kWindowW, kWindowH};
 }
 
 void Game::on_start() {
+    menu_vm_->play_pvp = [this] { start_play(false); };
+    menu_vm_->play_pve = [this] { start_play(true); };
+    menu_vm_->exit = [this] { world_.ctx<engine::ApplicationState>().quit(); };
+    play_vm_->back = [this] { enter_menu(); };
+
+    for (int x = 0; x < Board::kSize; ++x) {
+        for (int y = 0; y < Board::kSize; ++y) {
+            const std::size_t index = static_cast<std::size_t>(x * Board::kSize + y);
+            play_vm_->cell_click[index] = engine::ui::RelayCommand([this, x, y] { on_cell_click(x, y); },
+                    [this, x, y] { return can_click(x, y); });
+        }
+    }
+
     spawn_camera();
-    spawn_quad();
-    spawn_hud();
+    spawn_ui();
     register_systems();
+    enter_menu();
+
+    engine::ecs::EventWriter<engine::PlayMusicEvent>{world_}.send(engine::PlayMusicEvent{
+            .id = assets::sound::music,
+            .loop = true,
+    });
+}
+
+void Game::on_quit() {
+    audio_.stop_music(0.f);
 }
 
 void Game::spawn_camera() {
     const engine::ecs::Entity camera = world_.create();
     world_.emplace<engine::Transform>(camera);
-    world_.emplace<engine::Camera>(camera, engine::Camera{.ortho_size = 6.f});
+    world_.emplace<engine::Camera>(camera, engine::Camera{.ortho_size = kOrthoHalf});
     world_.ctx<engine::ActiveCamera>().entity = camera;
 }
 
-void Game::spawn_quad() {
-    const auto mesh = factory_.create_mesh(unit_quad());
-    const auto shader = factory_.create_shader({kVertexSrc, kFragmentSrc});
-    engine::render::TextureDesc white;
-    white.width = 1;
-    white.height = 1;
-    white.rgba = {255, 255, 255, 255};
-    const auto texture = factory_.create_texture(white);
-    auto material = std::make_shared<ColorMaterial>(shader, texture, glm::vec4{0.95f, 0.45f, 0.35f, 1.0f});
-
-    quad_ = world_.create();
-    world_.emplace<engine::Transform>(quad_, engine::Transform{.position = {0.f, 0.f, 0.f}});
-    world_.emplace<engine::RigidBody>(quad_, engine::RigidBody{.velocity = {3.2f, 2.4f, 0.f}});
-    world_.emplace<engine::BoxCollider>(quad_, engine::BoxCollider{.size = {1.f, 1.f, 1.f}});
-    world_.emplace<engine::render::Renderable>(quad_, engine::render::Renderable{
-            .mesh = mesh,
-            .material = std::move(material),
-            .color = {1.f, 1.f, 1.f, 1.f},
-            .layer = 0,
-            .order_in_layer = 0,
-    });
-}
-
-void Game::spawn_hud() {
-    const engine::ecs::Entity canvas = world_.create();
-    world_.emplace<engine::ui::UiCanvas>(canvas, engine::ui::UiCanvas{
-            .document = assets::ui::hud,
+void Game::spawn_ui() {
+    canvas_ = world_.create();
+    world_.emplace<engine::ui::UiCanvas>(canvas_, engine::ui::UiCanvas{
+            .document = assets::ui::menu,
             .stylesheet = assets::ui::theme,
-            .data_context = hud_,
+            .data_context = menu_vm_,
             .fit = engine::ui::UiFit::FillWindow,
             .order = 10,
     });
+}
 
-    hud_->nudge = [this] {
-        if (!world_.valid(quad_)) {
-            return;
-        }
-        engine::RigidBody* body = world_.try_get<engine::RigidBody>(quad_);
-        if (body == nullptr) {
-            return;
-        }
-        body->velocity.x += (body->velocity.x >= 0.f) ? 1.5f : -1.5f;
-        body->velocity.y += (body->velocity.y >= 0.f) ? 1.2f : -1.2f;
-    };
-    hud_->quit = [this] { world_.ctx<engine::ApplicationState>().quit(); };
+void Game::apply_screen() {
+    auto& canvas = world_.get<engine::ui::UiCanvas>(canvas_);
+    if (match_.screen() == Screen::Menu) {
+        canvas.document = assets::ui::menu;
+        canvas.data_context = menu_vm_;
+    } else {
+        canvas.document = assets::ui::play;
+        canvas.data_context = play_vm_;
+    }
+}
+
+void Game::play_step_sfx() {
+    engine::ecs::EventWriter<engine::PlaySfxEvent>{world_}.send(engine::PlaySfxEvent{.id = assets::sound::step});
+}
+
+void Game::enter_menu() {
+    match_.enter_menu();
+    presenter_.refresh_scores(match_.board());
+    presenter_.sync_marks(match_.board());
+    presenter_.sync_result_message(match_.board());
+    apply_screen();
+}
+
+void Game::start_play(bool pve) {
+    match_.start_play(pve);
+    presenter_.refresh_scores(match_.board());
+    presenter_.sync_marks(match_.board());
+    presenter_.sync_result_message(match_.board());
+    apply_screen();
+}
+
+bool Game::can_click(int x, int y) const {
+    return match_.can_click(x, y);
+}
+
+void Game::on_cell_click(int x, int y) {
+    if (match_.on_cell_click(x, y) != MatchController::StepResult::Moved) {
+        return;
+    }
+    play_step_sfx();
+    presenter_.sync_marks(match_.board());
+    presenter_.sync_result_message(match_.board());
+}
+
+void Game::tick_round(float dt) {
+    switch (match_.tick(dt, rng_)) {
+        case MatchController::StepResult::Moved:
+            play_step_sfx();
+            presenter_.sync_marks(match_.board());
+            presenter_.sync_result_message(match_.board());
+            break;
+        case MatchController::StepResult::RoundEnded:
+            presenter_.refresh_scores(match_.board());
+            presenter_.sync_marks(match_.board());
+            presenter_.sync_result_message(match_.board());
+            break;
+        case MatchController::StepResult::NoOp:
+            break;
+    }
 }
 
 void Game::register_systems() {
-    world_.add_system(engine::ecs::Schedule::Fixed, engine::ecs::Phase::Game, [this](engine::ecs::World& world) {
-        if (!world.valid(quad_)) {
-            return;
-        }
-        engine::Transform* transform = world.try_get<engine::Transform>(quad_);
-        engine::RigidBody* body = world.try_get<engine::RigidBody>(quad_);
-        if (transform == nullptr || body == nullptr) {
-            return;
-        }
-
-        const engine::ui::WindowSize& window = world.ctx<engine::ui::WindowSize>();
-        const engine::ActiveCamera& active = world.ctx<engine::ActiveCamera>();
-        const engine::Camera* camera =
-                world.valid(active.entity) ? world.try_get<engine::Camera>(active.entity) : nullptr;
-        if (camera == nullptr) {
-            return;
-        }
-
-        const float aspect = engine::camera_aspect(*camera, window);
-        const float half_h = camera->ortho_size;
-        const float half_w = half_h * aspect;
-        const float half = 0.5f;
-        bool bounced = false;
-
-        if (transform->position.x + half > half_w) {
-            transform->position.x = half_w - half;
-            body->velocity.x = -std::abs(body->velocity.x);
-            bounced = true;
-        } else if (transform->position.x - half < -half_w) {
-            transform->position.x = -half_w + half;
-            body->velocity.x = std::abs(body->velocity.x);
-            bounced = true;
-        }
-        if (transform->position.y + half > half_h) {
-            transform->position.y = half_h - half;
-            body->velocity.y = -std::abs(body->velocity.y);
-            bounced = true;
-        } else if (transform->position.y - half < -half_h) {
-            transform->position.y = -half_h + half;
-            body->velocity.y = std::abs(body->velocity.y);
-            bounced = true;
-        }
-
-        if (bounced && hud_) {
-            hud_->bounces.set(hud_->bounces.get() + 1);
-        }
+    world_.add_system(engine::ecs::Schedule::Frame, engine::ecs::Phase::Game, [this](engine::ecs::World& world) {
+        tick_round(world.ctx<engine::Time>().delta_time);
     });
 }
 

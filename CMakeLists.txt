@@ -8,7 +8,12 @@ enable_testing()
 engine_add_game(tic-tac-toe
     src/main.cpp
     src/game.cpp
-    src/hud_view_model.cpp)
+    src/match_controller.cpp
+    src/board.cpp
+    src/bot_ai.cpp
+    src/menu_view_model.cpp
+    src/play_view_model.cpp
+    src/play_presenter.cpp)
 
 add_executable(tic_tac_toe_tests
     tests/board_test.cpp

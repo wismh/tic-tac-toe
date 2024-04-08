@@ -1,0 +1,65 @@
+<Canvas>
+  <Stack class="play" direction="vertical">
+    <Stack class="board" direction="vertical">
+      <Stack class="row" direction="horizontal">
+        <Button class="cell-0-0" command="{binding cell_0_0_click}">
+          <Stack class="cell-0-0" direction="horizontal">
+            <Image class="mark" source="{binding cell_0_0_mark}"/>
+          </Stack>
+        </Button>
+        <Button class="cell-1-0" command="{binding cell_1_0_click}">
+          <Stack class="cell-1-0" direction="horizontal">
+            <Image class="mark" source="{binding cell_1_0_mark}"/>
+          </Stack>
+        </Button>
+        <Button class="cell-2-0" command="{binding cell_2_0_click}">
+          <Stack class="cell-2-0" direction="horizontal">
+            <Image class="mark" source="{binding cell_2_0_mark}"/>
+          </Stack>
+        </Button>
+      </Stack>
+      <Stack class="row" direction="horizontal">
+        <Button class="cell-0-1" command="{binding cell_0_1_click}">
+          <Stack class="cell-0-1" direction="horizontal">
+            <Image class="mark" source="{binding cell_0_1_mark}"/>
+          </Stack>
+        </Button>
+        <Button class="cell-1-1" command="{binding cell_1_1_click}">
+          <Stack class="cell-1-1" direction="horizontal">
+            <Image class="mark" source="{binding cell_1_1_mark}"/>
+          </Stack>
+        </Button>
+        <Button class="cell-2-1" command="{binding cell_2_1_click}">
+          <Stack class="cell-2-1" direction="horizontal">
+            <Image class="mark" source="{binding cell_2_1_mark}"/>
+          </Stack>
+        </Button>
+      </Stack>
+      <Stack class="row" direction="horizontal">
+        <Button class="cell-0-2" command="{binding cell_0_2_click}">
+          <Stack class="cell-0-2" direction="horizontal">
+            <Image class="mark" source="{binding cell_0_2_mark}"/>
+          </Stack>
+        </Button>
+        <Button class="cell-1-2" command="{binding cell_1_2_click}">
+          <Stack class="cell-1-2" direction="horizontal">
+            <Image class="mark" source="{binding cell_1_2_mark}"/>
+          </Stack>
+        </Button>
+        <Button class="cell-2-2" command="{binding cell_2_2_click}">
+          <Stack class="cell-2-2" direction="horizontal">
+            <Image class="mark" source="{binding cell_2_2_mark}"/>
+          </Stack>
+        </Button>
+      </Stack>
+    </Stack>
+    <Stack class="hud" direction="vertical">
+      <Stack class="scores" direction="horizontal">
+        <Label class="score-x" text="{binding score_x}"/>
+        <Label class="score-o" text="{binding score_o}"/>
+      </Stack>
+      <Label class="result-message" text="{binding result_message}"/>
+      <Button class="menu-btn" command="{binding back}" content="Back"/>
+    </Stack>
+  </Stack>
+</Canvas>

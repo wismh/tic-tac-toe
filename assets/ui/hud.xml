@@ -1,8 +1,0 @@
-<Canvas>
-  <Stack class="hud" direction="vertical">
-    <Label class="title" content="Wind Host"/>
-    <Label class="score" text="{binding bounces}"/>
-    <Button class="btn" command="{binding nudge}" content="Nudge"/>
-    <Button class="btn" command="{binding quit}" content="Quit"/>
-  </Stack>
-</Canvas>
