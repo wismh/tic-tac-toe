@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # CMakePresets.json's "vs" preset hardcodes generator "Visual Studio 18 2026", which is not
+      # installed on GitHub's windows-latest image (currently VS2022 / "Visual Studio 17 2022").
+      # Configuring without -G lets CMake pick whatever Visual Studio generator the runner
+      # actually has installed instead of hardcoding a version that will drift out of sync with
+      # GitHub's image again the next time either side upgrades.
+      - name: Configure
+        run: cmake -S . -B build -DENGINE_BUILD_TESTS=ON
+
+      # Build this game's own test binary and the real game executable so a compile regression in
+      # either the domain code or the engine-adapter code fails CI, without also requiring
+      # engine_tests (audio/window/host engine-internal suites that need real audio/display
+      # hardware this runner doesn't have) to build or pass.
+      - name: Build tests
+        run: cmake --build build --target tic_tac_toe_tests --config Debug
+
+      - name: Build game
+        run: cmake --build build --target tic-tac-toe --config Debug
+
+      # Scope CTest to this repo's own domain-logic suites (BoardTest, BotAiTest). engine_tests is
+      # never built above, so it can't appear here regardless.
+      - name: Run tests
+        run: ctest --test-dir build -C Debug -R "BoardTest|BotAiTest|MatchControllerTest" --output-on-failure
