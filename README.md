@@ -20,6 +20,32 @@ cmake --build build --target tic-tac-toe --config Debug
 
 Run `build/bin/Debug/tic-tac-toe.exe`. Mixer is on (`ENGINE_WITH_AUDIO`). Wind lives at `external/engine`. Engine gaps: [docs/engine-limits.md](docs/engine-limits.md).
 
+## Build for web / Android
+
+Wind's `web` (Emscripten/WebGL2) and `android-arm64` (NDK/GLES3) profiles carry over via the `web` / `android-arm64` presets in this repo's own [CMakePresets.json](CMakePresets.json). Both platforms build assets with a **native** `asset_codegen` first — the cross compiler can't run the cook tool as a host binary:
+
+```bash
+cmake -S . -B build-native -DENGINE_BUILD_TESTS=OFF
+cmake --build build-native --target asset_codegen --config Debug
+```
+
+**Web** (install [emsdk](https://emscripten.org/docs/getting_started/downloads.html) and activate it first):
+
+```bash
+emcmake cmake --preset web -DENGINE_HOST_ASSET_CODEGEN="$PWD/build-native/Debug/asset_codegen.exe"
+cmake --build --preset web
+python3 -m http.server -d build-web/bin   # serve over HTTP, file:// blocks WASM
+```
+
+**Android** (set `ANDROID_NDK_HOME`; this compile-checks `libmain.so`, it doesn't produce an APK — see Wind's own README for the Gradle template in `external/engine/cmake/android/`):
+
+```bash
+cmake --preset android-arm64 -DENGINE_HOST_ASSET_CODEGEN="$PWD/build-native/Debug/asset_codegen.exe"
+cmake --build --preset android-arm64
+```
+
+Audio (`ENGINE_WITH_AUDIO`) stays off on both — Wind doesn't force SDL_mixer on for these profiles yet, and this repo's `CMakeLists.txt` respects that (`EMSCRIPTEN`/`ANDROID` skip the desktop `FORCE ON`).
+
 ## Test
 
 Domain logic (`Board`, `choose_bot_move`, `MatchController`) is covered by GoogleTest and runs without launching a window:
