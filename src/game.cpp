@@ -84,7 +84,8 @@ void Game::spawn_ui() {
             .document = assets::ui::menu,
             .stylesheet = assets::ui::theme,
             .data_context = menu_vm_,
-            .fit = engine::ui::UiFit::FillWindow,
+            .reference_size = {static_cast<float>(kWindowW), static_cast<float>(kWindowH)},
+            .fit = engine::ui::UiFit::ScaleWithScreenSize,
             .order = 10,
     });
 }
