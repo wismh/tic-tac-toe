@@ -26,10 +26,18 @@ constexpr int kWindowW = kLogicalW * kScale;
 constexpr int kWindowH = kLogicalH * kScale;
 constexpr float kOrthoHalf = 116.f;
 
+constexpr float kTapVibrationSeconds = 0.02f;
+constexpr float kTapVibrationIntensity = 0.4f;
+constexpr float kMarkPlacedVibrationSeconds = 0.03f;
+constexpr float kMarkPlacedVibrationIntensity = 0.7f;
+constexpr float kRoundOutcomeVibrationSeconds = 0.25f;
+constexpr float kRoundOutcomeVibrationIntensity = 1.f;
+
 }
 
-Game::Game(engine::InputSystem&, engine::IAudioSystem& audio) :
+Game::Game(engine::InputSystem&, engine::IAudioSystem& audio, engine::IHaptics& haptics) :
     audio_(audio),
+    haptics_(haptics),
     menu_vm_(std::make_shared<MenuViewModel>()),
     play_vm_(std::make_shared<PlayViewModel>()),
     presenter_(play_vm_) {}
@@ -43,10 +51,10 @@ glm::ivec2 Game::window_size() const {
 }
 
 void Game::on_start() {
-    menu_vm_->play_pvp = [this] { start_play(false); };
-    menu_vm_->play_pve = [this] { start_play(true); };
-    menu_vm_->exit = [this] { world_.ctx<engine::ApplicationState>().quit(); };
-    play_vm_->back = [this] { enter_menu(); };
+    menu_vm_->play_pvp = [this] { tap_haptic(); start_play(false); };
+    menu_vm_->play_pve = [this] { tap_haptic(); start_play(true); };
+    menu_vm_->exit = [this] { tap_haptic(); world_.ctx<engine::ApplicationState>().quit(); };
+    play_vm_->back = [this] { tap_haptic(); enter_menu(); };
 
     for (int x = 0; x < Board::kSize; ++x) {
         for (int y = 0; y < Board::kSize; ++y) {
@@ -132,6 +140,11 @@ void Game::on_cell_click(int x, int y) {
     play_step_sfx();
     presenter_.sync_marks(match_.board());
     presenter_.sync_result_message(match_.board());
+    if (match_.board().outcome() == Outcome::Playing) {
+        mark_placed_haptic();
+    } else {
+        round_outcome_haptic();
+    }
 }
 
 void Game::tick_round(float dt) {
@@ -140,6 +153,11 @@ void Game::tick_round(float dt) {
             play_step_sfx();
             presenter_.sync_marks(match_.board());
             presenter_.sync_result_message(match_.board());
+            if (match_.board().outcome() == Outcome::Playing) {
+                mark_placed_haptic();
+            } else {
+                round_outcome_haptic();
+            }
             break;
         case MatchController::StepResult::RoundEnded:
             presenter_.refresh_scores(match_.board());
@@ -149,6 +167,18 @@ void Game::tick_round(float dt) {
         case MatchController::StepResult::NoOp:
             break;
     }
+}
+
+void Game::tap_haptic() {
+    haptics_.vibrate(kTapVibrationSeconds, kTapVibrationIntensity);
+}
+
+void Game::mark_placed_haptic() {
+    haptics_.vibrate(kMarkPlacedVibrationSeconds, kMarkPlacedVibrationIntensity);
+}
+
+void Game::round_outcome_haptic() {
+    haptics_.vibrate(kRoundOutcomeVibrationSeconds, kRoundOutcomeVibrationIntensity);
 }
 
 void Game::register_systems() {
