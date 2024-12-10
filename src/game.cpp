@@ -118,6 +118,7 @@ void Game::enter_menu() {
     presenter_.refresh_scores(match_.board());
     presenter_.sync_marks(match_.board());
     presenter_.sync_result_message(match_.board());
+    presenter_.sync_win_line(match_.board());
     apply_screen();
 }
 
@@ -126,6 +127,7 @@ void Game::start_play(bool pve) {
     presenter_.refresh_scores(match_.board());
     presenter_.sync_marks(match_.board());
     presenter_.sync_result_message(match_.board());
+    presenter_.sync_win_line(match_.board());
     apply_screen();
 }
 
@@ -140,6 +142,7 @@ void Game::on_cell_click(int x, int y) {
     play_step_sfx();
     presenter_.sync_marks(match_.board());
     presenter_.sync_result_message(match_.board());
+    presenter_.sync_win_line(match_.board());
     if (match_.board().outcome() == Outcome::Playing) {
         mark_placed_haptic();
     } else {
@@ -153,6 +156,7 @@ void Game::tick_round(float dt) {
             play_step_sfx();
             presenter_.sync_marks(match_.board());
             presenter_.sync_result_message(match_.board());
+            presenter_.sync_win_line(match_.board());
             if (match_.board().outcome() == Outcome::Playing) {
                 mark_placed_haptic();
             } else {
@@ -163,6 +167,7 @@ void Game::tick_round(float dt) {
             presenter_.refresh_scores(match_.board());
             presenter_.sync_marks(match_.board());
             presenter_.sync_result_message(match_.board());
+            presenter_.sync_win_line(match_.board());
             break;
         case MatchController::StepResult::NoOp:
             break;

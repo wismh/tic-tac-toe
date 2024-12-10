@@ -52,6 +52,14 @@
           </Stack>
         </Button>
       </Stack>
+      <Image class="win-row-0" source="{binding win_row_0}"/>
+      <Image class="win-row-1" source="{binding win_row_1}"/>
+      <Image class="win-row-2" source="{binding win_row_2}"/>
+      <Image class="win-col-0" source="{binding win_col_0}"/>
+      <Image class="win-col-1" source="{binding win_col_1}"/>
+      <Image class="win-col-2" source="{binding win_col_2}"/>
+      <Image class="win-diag" source="{binding win_diag}"/>
+      <Image class="win-anti-diag" source="{binding win_anti_diag}"/>
     </Stack>
     <Stack class="hud" direction="vertical">
       <Stack class="scores" direction="horizontal">
