@@ -1,4 +1,4 @@
-#include <engine/core/engine.h>
+#include <engine/engine.h>
 
 #include <game/game.h>
 
