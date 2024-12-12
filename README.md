@@ -22,29 +22,35 @@ Run `build/bin/Debug/tic-tac-toe.exe`. Mixer is on (`ENGINE_WITH_AUDIO`). Wind l
 
 ## Build for web / Android
 
-Wind's `web` (Emscripten/WebGL2) and `android-arm64` (NDK/GLES3) profiles carry over via the `web` / `android-arm64` presets in this repo's own [CMakePresets.json](CMakePresets.json). Both platforms build assets with a **native** `asset_codegen` first — the cross compiler can't run the cook tool as a host binary:
+Wind's `web` (Emscripten/WebGL2) and `android-arm64` (NDK/GLES3) profiles carry over via the `web` / `web-audio` / `android-arm64` presets in this repo's own [CMakePresets.json](CMakePresets.json). Both platforms build assets with a **native** `asset_codegen` first — the cross compiler can't run the cook tool as a host binary:
 
 ```bash
 cmake -S . -B build-native -DENGINE_BUILD_TESTS=OFF
 cmake --build build-native --target asset_codegen --config Debug
 ```
 
-**Web** (install [emsdk](https://emscripten.org/docs/getting_started/downloads.html) and activate it first):
+**Web** (install [emsdk](https://emscripten.org/docs/getting_started/downloads.html) and activate it first). Use `web-audio` instead of `web` to link SDL3_mixer's WAV backend (`ENGINE_WITH_AUDIO=ON`) — confirmed working (menu, gameplay, and sound) in-browser:
 
 ```bash
-emcmake cmake --preset web -DENGINE_HOST_ASSET_CODEGEN="$PWD/build-native/Debug/asset_codegen.exe"
-cmake --build --preset web
-python3 -m http.server -d build-web/bin   # serve over HTTP, file:// blocks WASM
+emcmake cmake --preset web-audio -DENGINE_HOST_ASSET_CODEGEN="$PWD/build-native/Debug/asset_codegen.exe"
+cmake --build --preset web-audio
+python3 -m http.server -d build-web-audio/bin   # serve over HTTP, file:// blocks WASM
 ```
 
-**Android** (set `ANDROID_NDK_HOME`; this compile-checks `libmain.so`, it doesn't produce an APK — see Wind's own README for the Gradle template in `external/engine/cmake/android/`):
+(swap `web-audio` for `web` above to leave mixer out.)
+
+**Android** (set `ANDROID_NDK_HOME`; the `android-arm64` CMake preset compile-checks `libmain.so`, it doesn't produce an APK on its own). For a real APK, build `asset_codegen` natively as above, then drive Wind's Gradle template in `external/engine/cmake/android/` — it defaults `sdk.dir` from `local.properties`/`ANDROID_HOME`:
 
 ```bash
-cmake --preset android-arm64 -DENGINE_HOST_ASSET_CODEGEN="$PWD/build-native/Debug/asset_codegen.exe"
-cmake --build --preset android-arm64
+cd external/engine/cmake/android
+gradle :app:assembleDebug \
+  -PENGINE_SOURCE_DIR="$(pwd)/../.." \
+  -PENGINE_ANDROID_CMAKE="$(pwd)/../../../../CMakeLists.txt" \
+  -PENGINE_HOST_ASSET_CODEGEN="$(pwd)/../../../../build-native/Debug/asset_codegen.exe" \
+  -PENGINE_WITH_AUDIO=ON
 ```
 
-Audio (`ENGINE_WITH_AUDIO`) stays off on both — Wind doesn't force SDL_mixer on for these profiles yet, and this repo's `CMakeLists.txt` respects that (`EMSCRIPTEN`/`ANDROID` skip the desktop `FORCE ON`).
+(drop `-PENGINE_WITH_AUDIO=ON`, or set it to `OFF`, to leave mixer out — that's the default.) Confirmed working end-to-end on a physical device (menu, touch input, gameplay, and sound) via `adb install`.
 
 ## Test
 
