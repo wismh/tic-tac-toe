@@ -1,6 +1,8 @@
 # Tic-tac-toe (Wind)
 
-Remake of the childhood GreenEngine **Tic Tac Toe**. Window is 3× the original (576×696). Neon board / X / O art, looping music, step cue, and X/O scores in the original HUD font.
+[![CI](https://github.com/wismh/tic-tac-toe/actions/workflows/ci.yml/badge.svg)](https://github.com/wismh/tic-tac-toe/actions/workflows/ci.yml)
+
+A neon tic-tac-toe game built on **[Wind](https://github.com/wismh/wind-engine)**, a small custom 2D engine (ECS, declarative XML/CSS UI, command-buffer renderer). Looping music, step cue, and X/O scores in a neon HUD font.
 
 Start on the menu: **Play PvP**, **Play PvE** (O is a bot), or **Exit**. During a match, **Back** returns to the menu. After a win or draw the board pauses one second, then clears.
 
