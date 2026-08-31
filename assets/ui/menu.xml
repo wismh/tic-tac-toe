@@ -1,0 +1,7 @@
+<Canvas>
+  <Stack class="menu" direction="vertical">
+    <Button class="menu-btn" command="{binding play_pvp}" content="Play PvP"/>
+    <Button class="menu-btn" command="{binding play_pve}" content="Play PvE"/>
+    <Button class="menu-btn" command="{binding exit}" content="Exit"/>
+  </Stack>
+</Canvas>

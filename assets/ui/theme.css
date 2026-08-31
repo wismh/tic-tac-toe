@@ -1,0 +1,105 @@
+.menu {
+  width: 100%;
+  height: 100%;
+  gap: 20;
+  justify-content: center;
+  align-items: center;
+  background: #00000000;
+}
+
+.play {
+  width: 100%;
+  height: 100%;
+  padding: 24 0 0 0;
+  align-items: center;
+  gap: 36;
+}
+
+.board {
+  width: 440;
+  height: 416;
+  padding: 24 24 23 24;
+  background-image: c1a1c2d3e4f5678901234567890abc0a;
+  position: relative;
+}
+
+/* Winning-line overlay: absolutely positioned against .board's own box (position: relative
+   above makes it the containing block), z-indexed above the row stacks. Row/column centers and
+   the diagonal span/angle are derived from .board's padding (24 24 23 24) and the cell-N-N sizes
+   below — see docs/engine-limits.md "UI element rotation" for how this reads a single line.png
+   at 0/90/±43.28deg instead of needing three pre-rotated texture variants. */
+.win-row-0 { position: absolute; z-index: 1; left: 24; top: 75.5; width: 392; height: 24; }
+.win-row-1 { position: absolute; z-index: 1; left: 24; top: 199; width: 392; height: 24; }
+.win-row-2 { position: absolute; z-index: 1; left: 24; top: 320; width: 392; height: 24; }
+
+.win-col-0 { position: absolute; z-index: 1; left: -94; top: 196.5; width: 369; height: 24; transform: rotate(90); }
+.win-col-1 { position: absolute; z-index: 1; left: 36.5; top: 196.5; width: 369; height: 24; transform: rotate(90); }
+.win-col-2 { position: absolute; z-index: 1; left: 166; top: 196.5; width: 369; height: 24; transform: rotate(90); }
+
+.win-diag { position: absolute; z-index: 1; left: -49.18; top: 196.5; width: 538; height: 24; transform: rotate(43.28); }
+.win-anti-diag { position: absolute; z-index: 1; left: -49.18; top: 196.5; width: 538; height: 24; transform: rotate(-43.28); }
+
+.cell-0-0 { width: 133; height: 127; justify-content: center; align-items: center; }
+.cell-1-0 { width: 128; height: 127; justify-content: center; align-items: center; }
+.cell-2-0 { width: 131; height: 127; justify-content: center; align-items: center; }
+.cell-0-1 { width: 133; height: 120; justify-content: center; align-items: center; }
+.cell-1-1 { width: 128; height: 120; justify-content: center; align-items: center; }
+.cell-2-1 { width: 131; height: 120; justify-content: center; align-items: center; }
+.cell-0-2 { width: 133; height: 122; justify-content: center; align-items: center; }
+.cell-1-2 { width: 128; height: 122; justify-content: center; align-items: center; }
+.cell-2-2 { width: 131; height: 122; justify-content: center; align-items: center; }
+
+.mark {
+  width: 100;
+  height: 100;
+}
+
+.hud {
+  gap: 20;
+  align-items: center;
+  background: #00000000;
+}
+
+.scores {
+  gap: 24;
+  background: #00000000;
+}
+
+.score-x {
+  color: #7ecbff;
+  font-size: 36;
+  font-family: c1a1c2d3e4f5678901234567890abc07;
+  text-align: center;
+  align-items: center;
+}
+
+.score-o {
+  color: #ff7ae9;
+  font-size: 36;
+  font-family: c1a1c2d3e4f5678901234567890abc07;
+  text-align: center;
+  align-items: center;
+}
+
+.result-message {
+  color: #ffe066;
+  font-size: 28;
+  font-family: c1a1c2d3e4f5678901234567890abc07;
+  text-align: center;
+  align-items: center;
+}
+
+.menu-btn {
+  width: 326;
+  height: 88;
+  color: #e8f8ff;
+  font-size: 32;
+  font-family: c1a1c2d3e4f5678901234567890abc07;
+  background-image: c1a1c2d3e4f5678901234567890abc0c;
+  text-align: center;
+  align-items: center;
+}
+
+.menu-btn:hover {
+  background-image: c1a1c2d3e4f5678901234567890abc0d;
+}

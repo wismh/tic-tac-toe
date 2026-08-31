@@ -1,0 +1,29 @@
+[[assets]]
+guid = "a0e1b2c3d4f5678901234567890abc04"
+path = "fonts/ui.ttf"
+importer = "font"
+
+[[assets]]
+guid = "a0e1b2c3d4f5678901234567890abc03"
+path = "materials/unlit.mat"
+importer = "material"
+
+[[assets]]
+guid = "a0e1b2c3d4f5678901234567890abc02"
+path = "meshes/quad.mesh"
+importer = "mesh"
+
+[[assets]]
+guid = "a0e1b2c3d4f5678901234567890abc01"
+path = "shaders/unlit.shader"
+importer = "shader"
+
+[[assets]]
+guid = "a0e1b2c3d4f5678901234567890abc05"
+path = "textures/splash.png"
+importer = "ui_image"
+color_space = "srgb"
+filter = "linear"
+wrap = "clamp"
+layout = "single"
+

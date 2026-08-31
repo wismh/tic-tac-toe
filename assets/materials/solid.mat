@@ -1,0 +1,6 @@
+shader = "a0e1b2c3d4f5678901234567890abc01"
+blend = "opaque"
+color = [1.0, 1.0, 1.0, 1.0]
+
+[textures]
+albedo = "c1a1c2d3e4f5678901234567890abc03"

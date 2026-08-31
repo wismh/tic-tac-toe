@@ -1,0 +1,115 @@
+[[assets]]
+guid = "c1a1c2d3e4f5678901234567890abc07"
+path = "fonts/font.ttf"
+importer = "font"
+
+[[assets]]
+guid = "c1a1c2d3e4f5678901234567890abc06"
+path = "materials/solid.mat"
+importer = "material"
+
+[[assets]]
+guid = "c1a1c2d3e4f5678901234567890abc08"
+path = "sound/music.wav"
+importer = "audio"
+bank = "music"
+volume = 0.078125
+pitch_range = [1, 1]
+loop = true
+
+[[assets]]
+guid = "c1a1c2d3e4f5678901234567890abc09"
+path = "sound/step.wav"
+importer = "audio"
+bank = "sfx"
+volume = 1
+pitch_range = [1, 1]
+loop = false
+
+[[assets]]
+guid = "c1a1c2d3e4f5678901234567890abc0a"
+path = "textures/board.png"
+importer = "texture"
+color_space = "srgb"
+filter = "linear"
+wrap = "clamp"
+layout = "single"
+
+[[assets]]
+guid = "c1a1c2d3e4f5678901234567890abc0c"
+path = "textures/button_blue.png"
+importer = "texture"
+color_space = "srgb"
+filter = "linear"
+wrap = "clamp"
+layout = "single"
+
+[[assets]]
+guid = "c1a1c2d3e4f5678901234567890abc0d"
+path = "textures/button_purple.png"
+importer = "texture"
+color_space = "srgb"
+filter = "linear"
+wrap = "clamp"
+layout = "single"
+
+[[assets]]
+guid = "c1a1c2d3e4f5678901234567890abc0e"
+path = "textures/empty.png"
+importer = "texture"
+color_space = "srgb"
+filter = "nearest"
+wrap = "clamp"
+layout = "single"
+
+[[assets]]
+guid = "c1a1c2d3e4f5678901234567890abc0b"
+path = "textures/line.png"
+importer = "texture"
+color_space = "srgb"
+filter = "linear"
+wrap = "clamp"
+layout = "single"
+
+[[assets]]
+guid = "c1a1c2d3e4f5678901234567890abc02"
+path = "textures/o.png"
+importer = "texture"
+color_space = "srgb"
+filter = "linear"
+wrap = "clamp"
+layout = "single"
+
+[[assets]]
+guid = "c1a1c2d3e4f5678901234567890abc03"
+path = "textures/white.png"
+importer = "texture"
+color_space = "srgb"
+filter = "nearest"
+wrap = "clamp"
+layout = "single"
+
+[[assets]]
+guid = "c1a1c2d3e4f5678901234567890abc01"
+path = "textures/x.png"
+importer = "texture"
+color_space = "srgb"
+filter = "linear"
+wrap = "clamp"
+layout = "single"
+
+[[assets]]
+guid = "b7a1c2d3e4f5678901234567890abc13"
+path = "ui/menu.xml"
+importer = "ui"
+
+[[assets]]
+guid = "b7a1c2d3e4f5678901234567890abc11"
+path = "ui/play.xml"
+importer = "ui"
+
+[[assets]]
+guid = "b7a1c2d3e4f5678901234567890abc12"
+path = "ui/theme.css"
+importer = "css"
+
