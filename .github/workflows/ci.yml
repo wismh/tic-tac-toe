@@ -18,11 +18,11 @@ jobs:
       # installed on GitHub's windows-latest image (currently VS2022 / "Visual Studio 17 2022").
       # Configuring without -G lets CMake pick whatever Visual Studio generator the runner
       # actually has installed instead of hardcoding a version that will drift out of sync with
-      # GitHub's image again the next time either side upgrades. Since that also means we skip the
-      # "vs" preset itself, its ENGINE_WITH_AUDIO=ON cacheVariable needs to be passed explicitly
-      # here too, or this build would silently end up audio-off.
+      # GitHub's image again the next time either side upgrades. No -D flags needed: Wind defaults
+      # ENGINE_WITH_AUDIO/ENGINE_WITH_WINDOW ON for a game's add_subdirectory, so this plain
+      # configure already matches what the "vs" preset would give us.
       - name: Configure
-        run: cmake -S . -B build -DENGINE_WITH_AUDIO=ON
+        run: cmake -S . -B build
 
       # Build this game's own test binary and the real game executable so a compile regression in
       # either the domain code or the engine-adapter code fails CI. CMakeLists.txt only sets

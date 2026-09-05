@@ -5,32 +5,17 @@
       "name": "vs",
       "displayName": "Visual Studio",
       "generator": "Visual Studio 18 2026",
-      "binaryDir": "${sourceDir}/build",
-      "cacheVariables": {
-        "ENGINE_WITH_AUDIO": "ON"
-      }
+      "binaryDir": "${sourceDir}/build"
     },
     {
       "name": "web",
-      "displayName": "Emscripten WebGL2 (configure with emcmake, or set EMSDK and use the toolchain file directly)",
+      "displayName": "Emscripten WebGL2 + SDL3_mixer WAV backend (configure with emcmake, or set EMSDK and use the toolchain file directly)",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build-web",
       "toolchainFile": "${sourceDir}/external/engine/cmake/toolchains/Emscripten.cmake",
       "cacheVariables": {
         "ENGINE_WITH_WINDOW": "ON",
         "ENGINE_WITH_WEB": "ON"
-      }
-    },
-    {
-      "name": "web-audio",
-      "displayName": "Emscripten WebGL2 + SDL3_mixer WAV backend (configure with emcmake)",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build-web-audio",
-      "toolchainFile": "${sourceDir}/external/engine/cmake/toolchains/Emscripten.cmake",
-      "cacheVariables": {
-        "ENGINE_WITH_WINDOW": "ON",
-        "ENGINE_WITH_WEB": "ON",
-        "ENGINE_WITH_AUDIO": "ON"
       }
     },
     {
@@ -56,11 +41,6 @@
     {
       "name": "web",
       "configurePreset": "web",
-      "targets": ["tic-tac-toe"]
-    },
-    {
-      "name": "web-audio",
-      "configurePreset": "web-audio",
       "targets": ["tic-tac-toe"]
     },
     {
