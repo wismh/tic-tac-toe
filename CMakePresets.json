@@ -5,7 +5,10 @@
       "name": "vs",
       "displayName": "Visual Studio",
       "generator": "Visual Studio 18 2026",
-      "binaryDir": "${sourceDir}/build"
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "ENGINE_WITH_AUDIO": "ON"
+      }
     },
     {
       "name": "web",

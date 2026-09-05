@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(tic-tac-toe LANGUAGES CXX)
 
-if(NOT EMSCRIPTEN AND NOT ANDROID)
-    set(ENGINE_WITH_AUDIO ON CACHE BOOL "" FORCE)
-endif()
 set(ENGINE_WITH_GTEST ON CACHE BOOL "" FORCE)
 add_subdirectory(external/engine)
 enable_testing()
