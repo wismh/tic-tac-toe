@@ -20,12 +20,13 @@ jobs:
       # actually has installed instead of hardcoding a version that will drift out of sync with
       # GitHub's image again the next time either side upgrades.
       - name: Configure
-        run: cmake -S . -B build -DENGINE_BUILD_TESTS=ON
+        run: cmake -S . -B build
 
       # Build this game's own test binary and the real game executable so a compile regression in
-      # either the domain code or the engine-adapter code fails CI, without also requiring
-      # engine_tests (audio/window/host engine-internal suites that need real audio/display
-      # hardware this runner doesn't have) to build or pass.
+      # either the domain code or the engine-adapter code fails CI. CMakeLists.txt only sets
+      # ENGINE_WITH_GTEST (vendors GoogleTest for tic_tac_toe_tests below), not ENGINE_BUILD_TESTS,
+      # so engine_tests (audio/window/host engine-internal suites that need real audio/display
+      # hardware this runner doesn't have) is never even configured as a target, let alone built.
       - name: Build tests
         run: cmake --build build --target tic_tac_toe_tests --config Debug
 
