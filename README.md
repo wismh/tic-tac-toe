@@ -6,6 +6,8 @@ A neon tic-tac-toe game built on **[Wind](https://github.com/wismh/wind-engine)*
 
 Start on the menu: **Play PvP**, **Play PvE** (O is a bot), or **Exit**. During a match, **Back** returns to the menu. After a win or draw the board pauses one second, then clears.
 
+![Tic-tac-toe running as a desktop, web, and Android app](docs/tic-tac-toe.jpg)
+
 ## Prerequisites
 
 - CMake 3.16 or newer.
