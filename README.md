@@ -29,6 +29,7 @@ Wind's `web` (Emscripten/WebGL2) and `android-arm64` (NDK/GLES3) profiles carry 
 ```bash
 cmake -S . -B build-native -DENGINE_BUILD_TESTS=OFF
 cmake --build build-native --target asset_codegen --config Debug
+cmake --build build-native --target icon_codegen --config Debug
 ```
 
 **Web** (install [emsdk](https://emscripten.org/docs/getting_started/downloads.html) and activate it first). Audio (SDL3_mixer's WAV backend) is on by default here too — confirmed working (menu, gameplay, and sound) in-browser:
@@ -44,14 +45,19 @@ python3 -m http.server -d build-web/bin   # serve over HTTP, file:// blocks WASM
 **Android** (set `ANDROID_NDK_HOME`; the `android-arm64` CMake preset compile-checks `libmain.so`, it doesn't produce an APK on its own). For a real APK, build `asset_codegen` natively as above, then drive Wind's Gradle template in `external/engine/cmake/android/` — it defaults `sdk.dir` from `local.properties`/`ANDROID_HOME`:
 
 ```bash
+cp -r build-native/generated/tic-tac-toe/icons/mipmap-* build-native/generated/tic-tac-toe/android_res/
+
 cd external/engine/cmake/android
 gradle :app:assembleDebug \
   -PENGINE_SOURCE_DIR="$(pwd)/../.." \
   -PENGINE_ANDROID_CMAKE="$(pwd)/../../../../CMakeLists.txt" \
-  -PENGINE_HOST_ASSET_CODEGEN="$(pwd)/../../../../build-native/Debug/asset_codegen.exe"
+  -PENGINE_HOST_ASSET_CODEGEN="$(pwd)/../../../../build-native/Debug/asset_codegen.exe" \
+  -PENGINE_HOST_ICON_CODEGEN="$(pwd)/../../../../build-native/Debug/icon_codegen.exe" \
+  -PENGINE_ANDROID_RES_DIR="$(pwd)/../../../../build-native/generated/tic-tac-toe/android_res" \
+  -PENGINE_ANDROID_APPLICATION_ID="com.lumenwake.tictactoe"
 ```
 
-(audio is on by default; pass `-PENGINE_WITH_AUDIO=OFF` to leave the mixer out.) Confirmed working end-to-end on a physical device (menu, touch input, gameplay, and sound) via `adb install`.
+`ENGINE_ANDROID_RES_DIR` must point at a directory containing *only* the `mipmap-*/ic_launcher.png` folders — the `icons/` output from `icon_codegen` also has `icon.ico`/`icon.icns`/`favicon.png` as loose files alongside them, which AAPT2 rejects as invalid resources at a res root, hence the copy step. Skipping `ENGINE_ANDROID_RES_DIR` doesn't fail the build; it silently ships Wind's own default launcher icon instead of this game's, since the app module only has a real overlay when that property is set. (audio is on by default; pass `-PENGINE_WITH_AUDIO=OFF` to leave the mixer out.) Confirmed working end-to-end on a physical device (menu, touch input, gameplay, and sound) via `adb install`.
 
 ## Test
 
